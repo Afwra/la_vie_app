@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">La vie</string>
+    <string name="facebook_app_id">375081638129594</string>
+    <string name="fb_login_protocol_scheme">fb375081638129594</string>
+    <string name="facebook_client_token">4ed2856ddcf4f9dcd71e777a9f89783f</string>
+</resources>
+
+
