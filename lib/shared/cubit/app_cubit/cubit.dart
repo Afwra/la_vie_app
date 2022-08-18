@@ -1,12 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:la_vie_app/models/products_model.dart';
 import 'package:la_vie_app/models/seeds_model.dart';
 import 'package:la_vie_app/modules/home_screen/home_screen.dart';
 import 'package:la_vie_app/modules/leaf_screen/leaf_screen.dart';
 import 'package:la_vie_app/modules/notifications_screen/notification_screen.dart';
 import 'package:la_vie_app/modules/scan_screen/scan_screen.dart';
 import 'package:la_vie_app/modules/user_info_screen/user_info_screen.dart';
+import 'package:la_vie_app/shared/components/components.dart';
 import 'package:la_vie_app/shared/constants.dart';
 import 'package:la_vie_app/shared/cubit/app_cubit/states.dart';
 import 'package:la_vie_app/shared/network/remote/dio_helper.dart';
@@ -29,8 +31,12 @@ class AppCubit extends Cubit<AppStates>{
   ];
   int currentIndex = 2;
 
-  void changeNavIndex(int index){
-    currentIndex = index;
+  void changeNavIndex(int index,BuildContext context){
+    if(index == 1){
+      navigateTo(context, ScanScreen());
+    }else{
+      currentIndex = index;
+    }
     emit(ChangeBotNavBarState());
   }
 
@@ -74,9 +80,38 @@ class AppCubit extends Cubit<AppStates>{
     });
   }
 
+
+  ProductsModel? productsModel;
+  bool productsLoaded = false;
+  void getProducts(){
+    productsLoaded = false;
+    productsModel = null;
+    emit(GetProductsLoadingState());
+    DioHelper.getData(
+      path: '/api/v1/products',
+      options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken'
+          }
+      ),
+    ).then((value){
+      productsModel = ProductsModel.fromJson(value.data);
+      debugPrint(productsModel!.message);
+      if(productsModel!.data!.isNotEmpty){
+        productsLoaded = true;
+      }
+      emit(GetProductsSuccessState());
+    }).catchError((error){
+      debugPrint(error.toString());
+      emit(GetProductsErrorState());
+    });
+  }
+
   PlantsModel? plantsModel;
   bool plantsLoaded = false;
   void getPlants(){
+    plantsLoaded = false;
+    plantsModel = null;
     emit(GetPlantsLoadingState());
     DioHelper.getData(
       path: '/api/v1/plants',
@@ -99,7 +134,10 @@ class AppCubit extends Cubit<AppStates>{
   }
 
   ToolsModel? toolsModel;
+  bool toolsLoaded = false;
   void getTools(){
+    toolsLoaded = false;
+    toolsModel = null;
     emit(GetToolsLoadingState());
     DioHelper.getData(
       path: '/api/v1/tools',
@@ -111,6 +149,9 @@ class AppCubit extends Cubit<AppStates>{
     ).then((value){
       toolsModel = ToolsModel.fromJson(value.data);
       debugPrint(plantsModel!.message);
+      if(toolsModel!.data!.isNotEmpty){
+        toolsLoaded = true;
+      }
       emit(GetToolsSuccessState());
     }).catchError((error){
       debugPrint(error.toString());
@@ -119,7 +160,10 @@ class AppCubit extends Cubit<AppStates>{
   }
 
   SeedsModel? seedsModel;
+  bool seedsLoaded = false;
   void getSeeds(){
+    seedsLoaded = false;
+    seedsModel = null;
     emit(GetSeedsLoadingState());
     DioHelper.getData(
       path: '/api/v1/seeds',
@@ -131,6 +175,9 @@ class AppCubit extends Cubit<AppStates>{
     ).then((value){
       seedsModel = SeedsModel.fromJson(value.data);
       debugPrint(plantsModel!.message);
+      if(seedsModel!.data!.isNotEmpty){
+        seedsLoaded = true;
+      }
       emit(GetSeedsSuccessState());
     }).catchError((error){
       debugPrint(error.toString());

@@ -2,7 +2,6 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:la_vie_app/models/plants_model.dart';
 import 'package:la_vie_app/modules/search_screen/search_screen.dart';
 import 'package:la_vie_app/shared/components/components.dart';
 import 'package:la_vie_app/shared/cubit/app_cubit/cubit.dart';
@@ -82,6 +81,7 @@ class HomeScreen extends StatelessWidget {
 
                         onPressed:(){
                           cubit.changeFilters(0);
+                          cubit.getProducts();
                         } ,child: const Text('All'),),
                       //Center(child: Text('Plants',style: TextStyle(color:Colors.black),),),
                     ),
@@ -140,7 +140,30 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(
                 height: 40,
               ),
-              ConditionalBuilder(
+              if(cubit.isAllPressed)
+                ConditionalBuilder(
+                  condition: cubit.productsLoaded,
+                  builder: (context) => GridView.builder(
+                    clipBehavior: Clip.none,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 3/2,
+                      mainAxisExtent: 250,
+                      mainAxisSpacing: 50,
+                      crossAxisSpacing: 10,
+
+                    ),
+                    padding: const EdgeInsets.all(8),
+                    itemCount: cubit.productsModel!.data!.length,
+                    itemBuilder: (context,index)=>buildProductItem(cubit.productsModel!.data![index]),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                  ),
+                  fallback: (context) =>const Center(child: CircularProgressIndicator()),
+                ),
+              if(cubit.isPlantsPressed)
+                ConditionalBuilder(
                 condition: cubit.plantsLoaded,
                 builder: (context) => GridView.builder(
                   clipBehavior: Clip.none,
@@ -161,6 +184,51 @@ class HomeScreen extends StatelessWidget {
                 ),
                 fallback: (context) =>const Center(child: CircularProgressIndicator()),
               ),
+              if(cubit.isToolsPressed)
+                ConditionalBuilder(
+                  condition: cubit.toolsLoaded,
+                  builder: (context) => GridView.builder(
+                    clipBehavior: Clip.none,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 3/2,
+                      mainAxisExtent: 250,
+                      mainAxisSpacing: 50,
+                      crossAxisSpacing: 10,
+
+                    ),
+                    padding: EdgeInsets.all(8),
+                    itemCount: cubit.toolsModel!.data!.length,
+                    itemBuilder: (context,index)=>buildProductItem(cubit.toolsModel!.data![index]),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                  ),
+                  fallback: (context) =>const Center(child: CircularProgressIndicator()),
+                ),
+              if(cubit.isSeedsPressed)
+                ConditionalBuilder(
+                  condition: cubit.seedsLoaded,
+                  builder: (context) => GridView.builder(
+                    clipBehavior: Clip.none,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 3/2,
+                      mainAxisExtent: 250,
+                      mainAxisSpacing: 50,
+                      crossAxisSpacing: 10,
+
+                    ),
+                    padding: EdgeInsets.all(8),
+                    itemCount: cubit.seedsModel!.data!.length,
+                    itemBuilder: (context,index)=>buildProductItem(cubit.seedsModel!.data![index]),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                  ),
+                  fallback: (context) =>const Center(child: CircularProgressIndicator()),
+                ),
+
             ],
           ),
         );
@@ -168,7 +236,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget buildProductItem(Data data)=>Container(
+  Widget buildProductItem(data)=>SizedBox(
     height: 200,
     child: Stack(
       clipBehavior: Clip.none,
@@ -192,9 +260,9 @@ class HomeScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
-                        onPressed: () {}, icon: Icon(Icons.difference)),
-                    Text('1'),
-                    IconButton(onPressed: () {}, icon: Icon(Ionicons.add))
+                        onPressed: () {}, icon: const Icon(Ionicons.remove)),
+                    const Text('1'),
+                    IconButton(onPressed: () {}, icon: const Icon(Ionicons.add))
                   ],
                 ),
               ),
@@ -240,7 +308,7 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
         ),
-        Align(
+        const Align(
           alignment: Alignment(-1.5, -3.3),
           child: Image(
             image: AssetImage('assets/images/plantproduct.png'),

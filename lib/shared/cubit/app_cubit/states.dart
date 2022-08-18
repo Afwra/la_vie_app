@@ -7,6 +7,10 @@ class GetFiltersSuccessState extends AppStates{}
 class GetFiltersFailState extends AppStates{}
 class ChangeFiltersState extends AppStates{}
 
+class GetProductsLoadingState extends AppStates{}
+class GetProductsSuccessState extends AppStates{}
+class GetProductsErrorState extends AppStates{}
+
 class GetPlantsLoadingState extends AppStates{}
 class GetPlantsSuccessState extends AppStates{}
 class GetPlantsErrorState extends AppStates{}

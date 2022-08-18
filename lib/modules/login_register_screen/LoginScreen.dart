@@ -4,10 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:la_vie_app/layout/home_layout.dart';
 import 'package:la_vie_app/models/login_model.dart';
 import 'package:la_vie_app/shared/components/components.dart';
+import 'package:la_vie_app/shared/constants.dart';
 import 'package:la_vie_app/shared/cubit/login_cubit/cubit.dart';
 import 'package:la_vie_app/shared/cubit/login_cubit/states.dart';
 import 'package:la_vie_app/shared/network/local/cache_helper.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatelessWidget {
   var loginFormKey = GlobalKey<FormState>();
@@ -24,12 +24,14 @@ class LoginScreen extends StatelessWidget {
       listener: (context,state){
         if(state is LoginSuccessState ){
           LoginModel? model = state.loginModel;
-          CacheHelper.putString(key: 'accessToken', value: model!.data!.accessToken.toString());
+          accessToken = model!.data!.accessToken.toString();
+          CacheHelper.putString(key: 'accessToken', value: model.data!.accessToken.toString());
           navigateToAndFinish(context, HomeLayout());
         }
         else if(state is RegisterSuccessState){
           LoginModel? model = state.loginModel;
-          CacheHelper.putString(key: 'accessToken', value: model!.data!.accessToken.toString());
+          accessToken = model!.data!.accessToken.toString();
+          CacheHelper.putString(key: 'accessToken', value: model.data!.accessToken.toString());
           navigateToAndFinish(context, HomeLayout());
         }
       },

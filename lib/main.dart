@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context)=>LoginCubit()),
-        BlocProvider(create: (context)=>AppCubit()..getFilters()..getPlants()),
+        BlocProvider(create: (context)=>AppCubit()..getProducts()),
       ],
       child: MaterialApp(
         home: EasySplashScreen(

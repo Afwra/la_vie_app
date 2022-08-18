@@ -31,7 +31,7 @@ class HomeLayout extends StatelessWidget {
               index: cubit.currentIndex,
               buttonBackgroundColor: Colors.green,
               onTap: (index){
-                cubit.changeNavIndex(index);
+                cubit.changeNavIndex(index,context);
               },
               backgroundColor: Colors.white.withOpacity(0),
               color: Colors.white,

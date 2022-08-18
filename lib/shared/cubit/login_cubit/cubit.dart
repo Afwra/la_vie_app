@@ -6,6 +6,7 @@ import 'package:la_vie_app/models/login_model.dart';
 import 'package:la_vie_app/shared/cubit/login_cubit/states.dart';
 import 'package:la_vie_app/shared/network/remote/dio_helper.dart';
 
+
 class LoginCubit extends Cubit<LoginStates>{
   LoginCubit():super(InitialLoginState());
 
@@ -54,14 +55,22 @@ class LoginCubit extends Cubit<LoginStates>{
       permissions: ['public_profile','email'],
     );
     if(result.status == LoginStatus.success){
-      AccessToken? token = result.accessToken;
-      debugPrint('Access token = ${token!.token.toString().trim()}');
+      final userData = await FacebookAuth.i.getUserData();
+      // AccessToken? token = result.accessToken;
+      debugPrint('Facebook Access token = ${userData['picture']['data']['url']}');
+      debugPrint('Facebook Access token = ${userData['name']}');
+      debugPrint('Facebook Access token = ${userData['email']}');
       DioHelper.getData(
           path: '/api/v1/auth/facebook',
         query: {
-            'access_token':token.token.toString().trim()
+          'id':userData['id'],
+          'email': userData['email'],
+          'firstName': userData['name'],
+          'lastName': userData['name'],
+          'picture': userData['picture']['data']['url'].toString()
         }
       ).then((value){
+        print('value is${value.data.toString()}');
         loginModel = LoginModel.fromJson(value.data);
         debugPrint(loginModel!.message);
         debugPrint(loginModel!.data!.user!.firstName);
@@ -74,19 +83,25 @@ class LoginCubit extends Cubit<LoginStates>{
   }
   void googleLogin(){
     emit(GoogleLoginLoadingState());
-    GoogleSignIn().signIn().then((value){
-      value!.authentication.then((value){
-        debugPrint('access token ${value.accessToken.toString()}');
+    GoogleSignIn().signIn().then((account){
+      account!.authentication.then((value){
+        debugPrint('google access token ${account.id}');
         DioHelper.postData(
             path: '/api/v1/auth/google',
           query: {
-              'access_token':value.accessToken.toString().trim()
+              'id' : account.id.toString(),
+              'firstName' : 'ahmed',
+              'lastName' : 'gamal',
+              'email': account.email.toString(),
+              'picture' : account.photoUrl.toString()
           }
         ).then((value){
           loginModel = LoginModel.fromJson(value.data);
+          debugPrint(loginModel!.message);
           emit(GoogleLoginSuccessState(loginModel));
 
         }).catchError((error){
+          debugPrint(error.toString());
           emit(GoogleLoginErrorState(error.toString()));
         });
       });
