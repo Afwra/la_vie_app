@@ -1,6 +1,3 @@
-/// type : "Success"
-/// message : "Logged in Successfully"
-/// data : {"user":{"userId":"3913fb9e-abe6-453c-9669-224e2accf9f8","firstName":"ahmed","lastName":"gamal","email":"lordofrings517@gmail.com","imageUrl":"https://www.planetware.com/wpimages/2020/02/france-in-pictures-beautiful-places-to-photograph-eiffel-tower.jpg","address":null,"role":"user"},"accessToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzOTEzZmI5ZS1hYmU2LTQ1M2MtOTY2OS0yMjRlMmFjY2Y5ZjgiLCJpYXQiOjE2NjA4Mjk0MTEsImV4cCI6MTY2MTAwMjIxMX0.vmMKQOjwVBnfBAhZMNco8p0Hz5AxiH0-7Cg1jchNL30","refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzOTEzZmI5ZS1hYmU2LTQ1M2MtOTY2OS0yMjRlMmFjY2Y5ZjgiLCJyZWZyZXNoIjp0cnVlLCJpYXQiOjE2NjA4Mjk0MTEsImV4cCI6MTY2MTQzNDIxMX0.oXuYKTfldaNvqm6loZ-iyYxJDyWfIY2K3TVF6bZVnJg"}
 
 class LoginModel {
   LoginModel({
@@ -43,9 +40,6 @@ LoginModel copyWith({  String? type,
 
 }
 
-/// user : {"userId":"3913fb9e-abe6-453c-9669-224e2accf9f8","firstName":"ahmed","lastName":"gamal","email":"lordofrings517@gmail.com","imageUrl":"https://www.planetware.com/wpimages/2020/02/france-in-pictures-beautiful-places-to-photograph-eiffel-tower.jpg","address":null,"role":"user"}
-/// accessToken : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzOTEzZmI5ZS1hYmU2LTQ1M2MtOTY2OS0yMjRlMmFjY2Y5ZjgiLCJpYXQiOjE2NjA4Mjk0MTEsImV4cCI6MTY2MTAwMjIxMX0.vmMKQOjwVBnfBAhZMNco8p0Hz5AxiH0-7Cg1jchNL30"
-/// refreshToken : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzOTEzZmI5ZS1hYmU2LTQ1M2MtOTY2OS0yMjRlMmFjY2Y5ZjgiLCJyZWZyZXNoIjp0cnVlLCJpYXQiOjE2NjA4Mjk0MTEsImV4cCI6MTY2MTQzNDIxMX0.oXuYKTfldaNvqm6loZ-iyYxJDyWfIY2K3TVF6bZVnJg"
 
 class Data {
   Data({
@@ -88,13 +82,6 @@ Data copyWith({  User? user,
 
 }
 
-/// userId : "3913fb9e-abe6-453c-9669-224e2accf9f8"
-/// firstName : "ahmed"
-/// lastName : "gamal"
-/// email : "lordofrings517@gmail.com"
-/// imageUrl : "https://www.planetware.com/wpimages/2020/02/france-in-pictures-beautiful-places-to-photograph-eiffel-tower.jpg"
-/// address : null
-/// role : "user"
 
 class User {
   User({
