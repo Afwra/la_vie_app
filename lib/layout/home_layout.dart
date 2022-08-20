@@ -2,6 +2,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:la_vie_app/modules/leaf_screen/leaf_screen.dart';
 import 'package:la_vie_app/modules/user_info_screen/user_info_screen.dart';
 import 'package:la_vie_app/shared/components/components.dart';
 import 'package:la_vie_app/shared/cubit/app_cubit/cubit.dart';
@@ -24,7 +25,13 @@ class HomeLayout extends StatelessWidget {
             ),
             bottomNavigationBar: CurvedNavigationBar(
               items: [
-                Icon(Ionicons.leaf_outline),
+                IconButton(
+                    onPressed: (){
+                      cubit.getForums();
+                      navigateTo(context, FormsScreen());
+                    },
+                    icon: Icon(Ionicons.leaf_outline)
+                ),
                 Icon(Ionicons.scan),
                 Icon(Ionicons.home_outline),
                 Icon(Ionicons.notifications_outline),
@@ -37,7 +44,7 @@ class HomeLayout extends StatelessWidget {
               ],
               index: cubit.currentIndex,
               letIndexChange: (index){
-                if(index == 4){
+                if(index == 4 || index ==0){
                   return false;
                 }
                 return true;

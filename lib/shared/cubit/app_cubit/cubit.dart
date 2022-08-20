@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:la_vie_app/models/forums_model.dart';
 import 'package:la_vie_app/models/products_model.dart';
 import 'package:la_vie_app/models/seeds_model.dart';
 import 'package:la_vie_app/modules/home_screen/home_screen.dart';
@@ -25,7 +26,7 @@ class AppCubit extends Cubit<AppStates>{
   static AppCubit get(context) => BlocProvider.of(context);
 
   List<Widget> screens = [
-    LeafScreen(),
+    FormsScreen(),
     ScanScreen(),
     HomeScreen(),
     NotificationsScreen(),
@@ -274,6 +275,34 @@ class AppCubit extends Cubit<AppStates>{
       showToast(msg: error.toString(),backGroundColor: Colors.red,textColor: Colors.white,gravity: ToastGravity.CENTER,toastLength: Toast.LENGTH_LONG);
 
       emit(UpdateUserErrorState());
+    });
+  }
+
+
+  ForumsModel? forumsModel;
+  bool isForumsLoaded = false;
+  bool isAllForumsPressed = true;
+  void getForums(){
+    isForumsLoaded = false;
+    forumsModel = null;
+    emit(GetForumsLoadingState());
+    DioHelper.getData(
+      path: isAllForumsPressed? '/api/v1/forums' : '/api/v1/forums/me',
+      options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken'
+          }
+      ),
+    ).then((value){
+      if(value.data['type']=='Success'){
+        isForumsLoaded = true;
+        forumsModel = ForumsModel.fromJson(value.data);
+        debugPrint(forumsModel!.message);
+        emit(GetForumsSuccessState());
+      }
+    }).catchError((error){
+      debugPrint(error.toString());
+      emit(GetForumsErrorState());
     });
   }
 }

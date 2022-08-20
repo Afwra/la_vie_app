@@ -46,21 +46,22 @@ Widget defaultSearchField(
       ),
     );
 
-Widget defaultButton({String? text,void Function()? onPressed})=>Container(
+Widget defaultButton({String? text,void Function()? onPressed,double? width,Color? backgroundColor,BoxBorder? border,Color? textColor,double? fontSize})=>Container(
   height: 40,
-  width: double.infinity,
+  width: width??double.infinity,
   decoration: BoxDecoration(
-    color: Colors.green,
+    color: backgroundColor?? Colors.green,
     borderRadius: BorderRadius.circular(10),
+    border: border
   ),
   child: MaterialButton(
     onPressed: onPressed,
 
     child: Text(
       '$text',
-      style:const TextStyle(
-        fontSize: 14,
-        color: Colors.white,
+      style: TextStyle(
+        fontSize: fontSize??14,
+        color: textColor??Colors.white,
       ),
     ),
   ),
