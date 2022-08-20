@@ -34,3 +34,9 @@ class UpdateUserErrorState extends AppStates{}
 class GetForumsLoadingState extends AppStates{}
 class GetForumsSuccessState extends AppStates{}
 class GetForumsErrorState extends AppStates{}
+
+class GetImageSuccessState extends AppStates{}
+class GetImageErrorState extends AppStates{}
+
+class PostForumSuccessState extends AppStates{}
+class PostForumErrorState extends AppStates{}

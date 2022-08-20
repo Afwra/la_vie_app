@@ -19,13 +19,6 @@ class HomeScreen extends StatelessWidget {
         return SingleChildScrollView(
           child: Column(
             children: [
-              const Text(
-                'La Vie',
-                style: TextStyle(
-                    fontFamily: 'DancingScript',
-                    fontWeight: FontWeight.w700,
-                    fontSize: 30),
-              ),
               const SizedBox(
                 height: 10,
               ),
@@ -292,7 +285,7 @@ class HomeScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: MaterialButton(
-                        child: Text(
+                        child: const Text(
                           'Add to Cart',
                           style: TextStyle(
                             fontSize: 14,
@@ -308,12 +301,14 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
         ),
-        const Align(
-          alignment: Alignment(-1.5, -3.3),
+        Align(
+          alignment: const Alignment(-1.2, -1.2),
           child: Image(
-            image: AssetImage('assets/images/plantproduct.png'),
-            width: 100,
-            height: 200,
+            image: data.imageUrl==''? const NetworkImage('https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1665px-No-Image-Placeholder.svg.png'):NetworkImage('https://lavie.orangedigitalcenteregypt.com${data.imageUrl}'),
+            width: 90,
+            height: 120,
+            fit: BoxFit.fill,
+
           ),
         ),
       ],

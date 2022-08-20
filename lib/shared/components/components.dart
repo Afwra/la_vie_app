@@ -13,8 +13,12 @@ void navigateToAndFinish(BuildContext context, Widget widget) {
 
 Widget defaultSearchField(
         {
+          int? minLines,
+          int? maxLines,
           Color? fillColor,
           IconData? prefix,
+          BorderSide? borderSide,
+          bool prefixEnabled = true,
           String? text,
           String? Function(String?)? validator,
         Function(String)? onSubmit,
@@ -23,6 +27,7 @@ Widget defaultSearchField(
           bool isPassword = false,
           bool isReadOnly = false,
           bool isEnabled = true,
+          EdgeInsetsGeometry? contentPadding,
         TextEditingController? controller,
         Function(String)? onChanged}) =>
     TextFormField(
@@ -36,14 +41,21 @@ Widget defaultSearchField(
       controller: controller,
       onChanged: onChanged,
       decoration: InputDecoration(
-        prefixIcon: Icon(prefix??Ionicons.search),
+        contentPadding: contentPadding,
+        prefixIcon: prefixEnabled? Icon(prefix??Ionicons.search):null,
         hintText: text??'Search',
         filled: true,
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide.none),
+            borderSide: borderSide?? BorderSide.none,
+        ),
+
         fillColor: fillColor??Colors.grey.shade200,
       ),
+      minLines: minLines,
+      maxLines: maxLines,
+
+
     );
 
 Widget defaultButton({String? text,void Function()? onPressed,double? width,Color? backgroundColor,BoxBorder? border,Color? textColor,double? fontSize})=>Container(

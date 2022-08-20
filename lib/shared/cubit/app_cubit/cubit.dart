@@ -1,12 +1,15 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:la_vie_app/models/forums_model.dart';
 import 'package:la_vie_app/models/products_model.dart';
 import 'package:la_vie_app/models/seeds_model.dart';
 import 'package:la_vie_app/modules/home_screen/home_screen.dart';
-import 'package:la_vie_app/modules/leaf_screen/leaf_screen.dart';
 import 'package:la_vie_app/modules/notifications_screen/notification_screen.dart';
 import 'package:la_vie_app/modules/scan_screen/scan_screen.dart';
 import 'package:la_vie_app/modules/user_info_screen/user_info_screen.dart';
@@ -19,6 +22,7 @@ import '../../../models/filter_model.dart';
 import '../../../models/plants_model.dart';
 import '../../../models/tools_model.dart';
 import '../../../models/user_model.dart';
+import '../../../modules/forums_screen/forums_screen.dart';
 
 class AppCubit extends Cubit<AppStates>{
   AppCubit():super(InitialAppState());
@@ -105,7 +109,7 @@ class AppCubit extends Cubit<AppStates>{
       ),
     ).then((value){
       productsModel = ProductsModel.fromJson(value.data);
-      debugPrint(productsModel!.message);
+      debugPrint(productsModel?.message);
       if(productsModel!.data!.isNotEmpty){
         productsLoaded = true;
       }
@@ -282,7 +286,7 @@ class AppCubit extends Cubit<AppStates>{
   ForumsModel? forumsModel;
   bool isForumsLoaded = false;
   bool isAllForumsPressed = true;
-  void getForums(){
+  void getForums({Map<String,dynamic>? query}){
     isForumsLoaded = false;
     forumsModel = null;
     emit(GetForumsLoadingState());
@@ -293,6 +297,7 @@ class AppCubit extends Cubit<AppStates>{
             'Authorization': 'Bearer $accessToken'
           }
       ),
+      query: query
     ).then((value){
       if(value.data['type']=='Success'){
         isForumsLoaded = true;
@@ -303,6 +308,47 @@ class AppCubit extends Cubit<AppStates>{
     }).catchError((error){
       debugPrint(error.toString());
       emit(GetForumsErrorState());
+    });
+  }
+
+  final ImagePicker _picker = ImagePicker();
+  XFile? image;
+  String? img64;
+  void pickImage()async{
+    image = await  _picker.pickImage(source: ImageSource.gallery);
+    if(image == null){
+      emit(GetImageErrorState());
+    }
+    else{
+      final bytes = File(image!.path).readAsBytesSync();
+      img64 = base64Encode(bytes);
+      debugPrint(img64);
+      emit(GetImageSuccessState());
+    }
+
+  }
+
+  void postForum({required String title,required String description,required BuildContext context}){
+    DioHelper.postData(
+        path: '/api/v1/forums',
+      data: {
+        "title": title,
+        "description": description,
+        "imageBase64":'data:image/jpeg;base64,$img64'
+      },
+      options: Options(
+        headers: {
+          'Authorization':'Bearer $accessToken'
+        }
+      )
+
+    ).then((value){
+      showToast(msg: 'Posted Successfully',backGroundColor: Colors.green,textColor: Colors.white);
+      Navigator.pop(context);
+      emit(PostForumSuccessState());
+    }).catchError((error){
+      debugPrint(error.toString());
+      emit(PostForumErrorState());
     });
   }
 }

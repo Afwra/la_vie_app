@@ -11,7 +11,7 @@ class DioHelper{
     );
   }
 
-  static Future<Response> postData({required String path,dynamic data,Map<String,dynamic>? query,String? token}){
+  static Future<Response> postData({required String path,dynamic data,Map<String,dynamic>? query,String? token,Options? options}){
     dio.options.headers={
       'content-type':'application/json',
       'Accept':'application/json'
@@ -19,7 +19,8 @@ class DioHelper{
     return dio.post(
       path,
       data: data,
-      queryParameters: query
+      queryParameters: query,
+      options: options
 
     );
   }

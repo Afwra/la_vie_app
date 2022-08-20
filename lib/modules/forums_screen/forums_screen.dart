@@ -4,12 +4,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:la_vie_app/models/forums_model.dart';
+import 'package:la_vie_app/modules/forums_screen/new_post_screen.dart';
 import 'package:la_vie_app/shared/components/components.dart';
 import 'package:la_vie_app/shared/cubit/app_cubit/cubit.dart';
 import 'package:la_vie_app/shared/cubit/app_cubit/states.dart';
 
 class FormsScreen extends StatelessWidget {
-  const FormsScreen({Key? key}) : super(key: key);
+  var searchController = TextEditingController();
+
+  FormsScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +49,16 @@ class FormsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(24.0),
             child: Column(
               children: [
-                defaultSearchField(),
+                defaultSearchField(
+                  controller: searchController,
+                  onChanged: (value){
+                    cubit.getForums(
+                      query: {
+                        'search':value
+                      }
+                    );
+                  }
+                ),
                 const SizedBox(height: 15,),
                 Row(
                   children: [
@@ -88,7 +100,7 @@ class FormsScreen extends StatelessWidget {
                         itemCount: cubit.forumsModel!.data!.length
                     ),
                   ),
-                  fallback: (context) => const Expanded(child: const Center(child: CircularProgressIndicator())),
+                  fallback: (context) => const Expanded(child: Center(child: CircularProgressIndicator())),
                 )
                 // Card(
                 //
@@ -198,7 +210,9 @@ class FormsScreen extends StatelessWidget {
             ),
           ),
           floatingActionButton: FloatingActionButton(
-            onPressed: (){},
+            onPressed: (){
+              navigateTo(context, NewPostScreen());
+            },
             child: const Icon(
               Ionicons.add,
               color: Colors.white,
