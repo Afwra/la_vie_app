@@ -2,6 +2,8 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:la_vie_app/modules/user_info_screen/user_info_screen.dart';
+import 'package:la_vie_app/shared/components/components.dart';
 import 'package:la_vie_app/shared/cubit/app_cubit/cubit.dart';
 import 'package:la_vie_app/shared/cubit/app_cubit/states.dart';
 
@@ -21,14 +23,25 @@ class HomeLayout extends StatelessWidget {
               child: cubit.screens[cubit.currentIndex],
             ),
             bottomNavigationBar: CurvedNavigationBar(
-              items: const [
+              items: [
                 Icon(Ionicons.leaf_outline),
                 Icon(Ionicons.scan),
                 Icon(Ionicons.home_outline),
                 Icon(Ionicons.notifications_outline),
-                Icon(Ionicons.person_outline),
+                IconButton(
+                    onPressed:(){
+                      navigateTo(context, UserInfoScreen());
+                      cubit.getUser();
+                      },
+                    icon: const Icon(Ionicons.person_outline)),
               ],
               index: cubit.currentIndex,
+              letIndexChange: (index){
+                if(index == 4){
+                  return false;
+                }
+                return true;
+              },
               buttonBackgroundColor: Colors.green,
               onTap: (index){
                 cubit.changeNavIndex(index,context);

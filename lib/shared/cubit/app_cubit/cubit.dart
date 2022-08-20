@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:la_vie_app/models/products_model.dart';
 import 'package:la_vie_app/models/seeds_model.dart';
 import 'package:la_vie_app/modules/home_screen/home_screen.dart';
@@ -16,6 +17,7 @@ import 'package:la_vie_app/shared/network/remote/dio_helper.dart';
 import '../../../models/filter_model.dart';
 import '../../../models/plants_model.dart';
 import '../../../models/tools_model.dart';
+import '../../../models/user_model.dart';
 
 class AppCubit extends Cubit<AppStates>{
   AppCubit():super(InitialAppState());
@@ -34,7 +36,13 @@ class AppCubit extends Cubit<AppStates>{
   void changeNavIndex(int index,BuildContext context){
     if(index == 1){
       navigateTo(context, ScanScreen());
-    }else{
+      currentIndex = 2;
+    }else if(index == 4){
+      navigateTo(context, UserInfoScreen());
+      getUser();
+      currentIndex = 2;
+    }
+    else{
       currentIndex = index;
     }
     emit(ChangeBotNavBarState());
@@ -182,6 +190,90 @@ class AppCubit extends Cubit<AppStates>{
     }).catchError((error){
       debugPrint(error.toString());
       emit(GetSeedsErrorState());
+    });
+  }
+
+  UserModel? userModel;
+  bool isUserLoaded = false;
+  void getUser(){
+    isUserLoaded = false;
+    emit(GetUserLoadingState());
+    DioHelper.getData(
+      path: '/api/v1/user/me',
+      options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken'
+          }
+      ),
+    ).then((value){
+      userModel = UserModel.fromJson(value.data);
+      debugPrint(userModel!.message);
+      if(userModel?.data != null){
+        isUserLoaded = true;
+      }
+      emit(GetUserSuccessState());
+    }).catchError((error){
+      debugPrint(error.toString());
+      emit(GetUserErrorState());
+    });
+  }
+
+
+  void changeUserName({required String name}){
+    List<String>? tmp = name.trimLeft().split(' ');
+    String? firstName ;
+
+    String? lastName ;
+    if(tmp.length ==1){
+      firstName = tmp[0];
+    }
+    else{
+      firstName = tmp[0];
+      lastName = tmp[1];
+    }
+
+    emit(UpdateUserLoadingState());
+    DioHelper.patchData(
+      path: '/api/v1/user/me',
+      options: Options(
+        headers: {
+          'Authorization':'Bearer $accessToken'
+        }
+      ),
+      data: {
+        "firstName": firstName,
+        "lastName": lastName??userModel!.data!.lastName,
+      }
+    ).then((value){
+      emit(UpdateUserSuccessState());
+      showToast(msg: '${value.data['message']}',backGroundColor: Colors.green,textColor: Colors.white,gravity: ToastGravity.BOTTOM,toastLength: Toast.LENGTH_LONG);
+      getUser();
+    }).catchError((error){
+      showToast(msg: error.toString(),backGroundColor: Colors.red,textColor: Colors.white,gravity: ToastGravity.CENTER,toastLength: Toast.LENGTH_LONG);
+
+      emit(UpdateUserErrorState());
+    });
+  }
+  void changeEmail({required String email}){
+    emit(UpdateUserLoadingState());
+    DioHelper.patchData(
+        path: '/api/v1/user/me',
+        options: Options(
+            headers: {
+              'Authorization':'Bearer $accessToken'
+            }
+        ),
+        data: {
+          "email": email,
+        }
+    ).then((value){
+      emit(UpdateUserSuccessState());
+      showToast(msg: '${value.data['message']}',backGroundColor: Colors.green,textColor: Colors.white,gravity: ToastGravity.BOTTOM,toastLength: Toast.LENGTH_LONG);
+      getUser();
+    }).catchError((error){
+      showToast(msg: error.toString(),backGroundColor: Colors.red,textColor: Colors.white,gravity: ToastGravity.CENTER,toastLength: Toast.LENGTH_LONG);
+
+      emit(UpdateUserErrorState());
     });
   }
 }

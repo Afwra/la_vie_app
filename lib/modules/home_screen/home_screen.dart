@@ -98,7 +98,7 @@ class HomeScreen extends StatelessWidget {
                         onPressed:(){
                           cubit.changeFilters(1);
                           cubit.getPlants();
-                        } ,child: Text('Plants'),),
+                        } ,child: const Text('Plants'),),
                       //Center(child: Text('Plants',style: TextStyle(color:Colors.black),),),
                     ),
                     const SizedBox(width: 10,),
@@ -114,7 +114,7 @@ class HomeScreen extends StatelessWidget {
                         onPressed:(){
                           cubit.changeFilters(2);
                           cubit.getSeeds();
-                        } ,child: Text('Seeds'),),
+                        } ,child: const Text('Seeds'),),
                       //Center(child: Text('Plants',style: TextStyle(color:Colors.black),),),
                     ),
                     const SizedBox(width: 10,),
@@ -131,7 +131,7 @@ class HomeScreen extends StatelessWidget {
                         onPressed:(){
                           cubit.changeFilters(3);
                           cubit.getTools();
-                        } ,child: Text('Tools'),),
+                        } ,child: const Text('Tools'),),
                       //Center(child: Text('Plants',style: TextStyle(color:Colors.black),),),
                     ),
                   ],
@@ -175,7 +175,7 @@ class HomeScreen extends StatelessWidget {
                     crossAxisSpacing: 10,
 
                   ),
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
                   itemCount: cubit.plantsModel!.data!.length,
                   itemBuilder: (context,index)=>buildProductItem(cubit.plantsModel!.data![index]),
                   scrollDirection: Axis.vertical,
@@ -197,7 +197,7 @@ class HomeScreen extends StatelessWidget {
                       crossAxisSpacing: 10,
 
                     ),
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     itemCount: cubit.toolsModel!.data!.length,
                     itemBuilder: (context,index)=>buildProductItem(cubit.toolsModel!.data![index]),
                     scrollDirection: Axis.vertical,
@@ -273,7 +273,7 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     Text(
                       '${data.name}',
-                      style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                     ),

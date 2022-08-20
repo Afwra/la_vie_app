@@ -22,3 +22,11 @@ class GetToolsErrorState extends AppStates{}
 class GetSeedsLoadingState extends AppStates{}
 class GetSeedsSuccessState extends AppStates{}
 class GetSeedsErrorState extends AppStates{}
+
+class GetUserLoadingState extends AppStates{}
+class GetUserSuccessState extends AppStates{}
+class GetUserErrorState extends AppStates{}
+
+class UpdateUserLoadingState extends AppStates{}
+class UpdateUserSuccessState extends AppStates{}
+class UpdateUserErrorState extends AppStates{}

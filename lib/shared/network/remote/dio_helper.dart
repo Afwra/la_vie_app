@@ -36,4 +36,17 @@ class DioHelper{
     );
 
   }
+
+  static Future<Response> patchData({required String path,Options? options,Map<String,dynamic>? data}){
+    dio.options.headers={
+      'content-type':'application/json',
+      'Accept':'application/json'
+    };
+    return dio.patch(
+        path,
+      options: options,
+      data: data,
+
+    );
+  }
 }
