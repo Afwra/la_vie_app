@@ -109,24 +109,29 @@ class AppCubit extends Cubit<AppStates>{
           }
       ),
     ).then((value){
-      productsModel = p.ProductsModel.fromJson(value.data);
-      debugPrint(productsModel?.message);
-      if(productsModel!.data!.isNotEmpty){
-        productsLoaded = true;
-        productsModel!.data!.forEach((element) {
-          if (element.type=='PLANT'){
-            plants.add(element);
+      if(value.statusCode == 200){
+
+        productsModel = p.ProductsModel.fromJson(value.data);
+        debugPrint(productsModel?.message);
+        if(productsModel!.data!.isNotEmpty){
+          productsLoaded = true;
+          for (var element in productsModel!.data!) {
+            if (element.type=='PLANT'){
+              plants.add(element);
+            }
+            else if (element.type == 'SEED'){
+              seeds.add(element);
+            }
+            else if (element.type == 'TOOL'){
+              tools.add(element);
+            }
           }
-          else if (element.type == 'SEED'){
-            seeds.add(element);
-          }
-          else if (element.type == 'TOOL'){
-            tools.add(element);
-          }
-        });
-        debugPrint('plants = ${plants.length}');
-        debugPrint('seeds = ${seeds.length}');
-        debugPrint('tools = ${tools.length}');
+          debugPrint('plants = ${plants.length}');
+          debugPrint('seeds = ${seeds.length}');
+          debugPrint('tools = ${tools.length}');
+        }else if(value.statusCode == 401){
+          navigateToAndFinish(context, LoginScreen());
+        }
       }
       emit(GetProductsSuccessState());
     }).catchError((error){
