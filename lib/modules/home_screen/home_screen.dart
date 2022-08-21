@@ -2,6 +2,7 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:la_vie_app/modules/cart_screen/cart_screen.dart';
 import 'package:la_vie_app/modules/search_screen/search_screen.dart';
 import 'package:la_vie_app/shared/components/components.dart';
 import 'package:la_vie_app/shared/cubit/app_cubit/cubit.dart';
@@ -51,7 +52,9 @@ class HomeScreen extends StatelessWidget {
                           Ionicons.cart_outline,
                           color: Colors.white,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          navigateTo(context, CartScreen());
+                        },
                       ),
                     ),
                   ],

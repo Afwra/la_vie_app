@@ -1,7 +1,6 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hexcolor/hexcolor.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:la_vie_app/shared/components/components.dart';
 import 'package:la_vie_app/shared/cubit/app_cubit/cubit.dart';
@@ -91,42 +90,7 @@ class SearchScreen extends StatelessWidget {
                           scrollDirection: Axis.vertical,
                         ),
                       ),
-                      fallback: (context) => Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              height: 200,
-                              width: 200,
-                              decoration: const BoxDecoration(
-                                  image: DecorationImage(
-                                      image: AssetImage('assets/images/searchFrame.png')
-                                  )
-                              ),
-                            ),
-                            const SizedBox(height: 40,),
-                            const Text(
-                              'Not Found',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 12,),
-                            Text(
-                              'Sorry, the keyword you entered cannot be found, please check again or search with another keyword.',
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: HexColor('#212121'),
-                              ),
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
+                      fallback: (context) => defaultEmptyScreen(title: 'Not Found'),
                   ),
                   // Row(
                   //   children: [

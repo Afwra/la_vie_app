@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:ionicons/ionicons.dart';
 
 import '../../models/products_model.dart';
@@ -173,6 +174,43 @@ Widget buildProductItem(Data data)=>SizedBox(
           fit: BoxFit.fill,
 
         ),
+      ),
+    ],
+  ),
+);
+
+Widget defaultEmptyScreen({required String title})=> Expanded(
+  child: Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Container(
+        height: 200,
+        width: 200,
+        decoration: const BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage('assets/images/searchFrame.png')
+            )
+        ),
+      ),
+      const SizedBox(height: 40,),
+      const Text(
+        'Not Found',
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      const SizedBox(height: 12,),
+      Text(
+        'Sorry, the keyword you entered cannot be found, please check again or search with another keyword.',
+        style: TextStyle(
+          fontSize: 18,
+          color: HexColor('#212121'),
+        ),
+        maxLines: 3,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
       ),
     ],
   ),
