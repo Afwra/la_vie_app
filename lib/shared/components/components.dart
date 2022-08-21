@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ionicons/ionicons.dart';
 
+import '../../models/products_model.dart';
+
 void navigateTo(BuildContext context, Widget widget) {
   Navigator.push(context, MaterialPageRoute(builder: (context) => widget));
 }
@@ -27,6 +29,7 @@ Widget defaultSearchField(
           bool isPassword = false,
           bool isReadOnly = false,
           bool isEnabled = true,
+          Widget? suffix,
           EdgeInsetsGeometry? contentPadding,
         TextEditingController? controller,
         Function(String)? onChanged}) =>
@@ -49,11 +52,13 @@ Widget defaultSearchField(
             borderRadius: BorderRadius.circular(10),
             borderSide: borderSide?? BorderSide.none,
         ),
+        suffix: suffix,
 
         fillColor: fillColor??Colors.grey.shade200,
       ),
       minLines: minLines,
       maxLines: maxLines,
+
 
 
     );
@@ -85,4 +90,90 @@ void showToast({required String msg,Color? backGroundColor,ToastGravity? gravity
   gravity: gravity,
   toastLength: toastLength,
   textColor: textColor
+);
+
+Widget buildProductItem(Data data)=>SizedBox(
+  height: 200,
+  child: Stack(
+    clipBehavior: Clip.none,
+    children: [
+      Container(
+        height: 272,
+        width: 200,
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: const [
+              BoxShadow(blurRadius: 0.5, color: Colors.grey)
+            ]),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                      onPressed: () {}, icon: const Icon(Ionicons.remove)),
+                  const Text('1'),
+                  IconButton(onPressed: () {}, icon: const Icon(Ionicons.add))
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(14.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${data.name}',
+                    style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text(data.price == null?'Unknown':'${data.price} egp'),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    height: 40,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: MaterialButton(
+                      child: const Text(
+                        'Add to Cart',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                      onPressed: () {},
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+      Align(
+        alignment: const Alignment(-1.2, -1.2),
+        child: Image(
+          image: data.imageUrl==''? const NetworkImage('https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1665px-No-Image-Placeholder.svg.png'):NetworkImage('https://lavie.orangedigitalcenteregypt.com${data.imageUrl}'),
+          width: 90,
+          height: 120,
+          fit: BoxFit.fill,
+
+        ),
+      ),
+    ],
+  ),
 );

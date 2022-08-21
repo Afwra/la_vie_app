@@ -7,9 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:la_vie_app/models/forums_model.dart';
-import 'package:la_vie_app/models/products_model.dart';
-import 'package:la_vie_app/models/seeds_model.dart';
+import 'package:la_vie_app/models/products_model.dart' as p;
 import 'package:la_vie_app/modules/home_screen/home_screen.dart';
+import 'package:la_vie_app/modules/login_register_screen/LoginScreen.dart';
 import 'package:la_vie_app/modules/notifications_screen/notification_screen.dart';
 import 'package:la_vie_app/modules/scan_screen/scan_screen.dart';
 import 'package:la_vie_app/modules/user_info_screen/user_info_screen.dart';
@@ -19,8 +19,6 @@ import 'package:la_vie_app/shared/cubit/app_cubit/states.dart';
 import 'package:la_vie_app/shared/network/remote/dio_helper.dart';
 
 import '../../../models/filter_model.dart';
-import '../../../models/plants_model.dart';
-import '../../../models/tools_model.dart';
 import '../../../models/user_model.dart';
 import '../../../modules/forums_screen/forums_screen.dart';
 
@@ -94,9 +92,12 @@ class AppCubit extends Cubit<AppStates>{
   }
 
 
-  ProductsModel? productsModel;
+  p.ProductsModel? productsModel;
   bool productsLoaded = false;
-  void getProducts(){
+  List<p.Data> plants = [];
+  List<p.Data> seeds =[];
+  List<p.Data> tools =[];
+  void getProducts({required BuildContext context}){
     productsLoaded = false;
     productsModel = null;
     emit(GetProductsLoadingState());
@@ -108,95 +109,122 @@ class AppCubit extends Cubit<AppStates>{
           }
       ),
     ).then((value){
-      productsModel = ProductsModel.fromJson(value.data);
+      productsModel = p.ProductsModel.fromJson(value.data);
       debugPrint(productsModel?.message);
       if(productsModel!.data!.isNotEmpty){
         productsLoaded = true;
+        productsModel!.data!.forEach((element) {
+          if (element.type=='PLANT'){
+            plants.add(element);
+          }
+          else if (element.type == 'SEED'){
+            seeds.add(element);
+          }
+          else if (element.type == 'TOOL'){
+            tools.add(element);
+          }
+        });
+        debugPrint('plants = ${plants.length}');
+        debugPrint('seeds = ${seeds.length}');
+        debugPrint('tools = ${tools.length}');
       }
       emit(GetProductsSuccessState());
     }).catchError((error){
       debugPrint(error.toString());
+      navigateTo(context, LoginScreen());
       emit(GetProductsErrorState());
     });
   }
 
-  PlantsModel? plantsModel;
-  bool plantsLoaded = false;
-  void getPlants(){
-    plantsLoaded = false;
-    plantsModel = null;
-    emit(GetPlantsLoadingState());
-    DioHelper.getData(
-      path: '/api/v1/plants',
-      options: Options(
-        headers: {
-          'Authorization': 'Bearer $accessToken'
-        }
-      ),
-    ).then((value){
-      plantsModel = PlantsModel.fromJson(value.data);
-      debugPrint(plantsModel!.message);
-      if(plantsModel!.data!.isNotEmpty){
-        plantsLoaded = true;
+  List<p.Data> searchResults =[];
+  bool isSearchSubmitted = false;
+  void searchProduct({required String searchName}){
+    searchResults = [];
+    for (var element in productsModel!.data!) {
+      if(element.name.toString().toLowerCase() == searchName.toString().toLowerCase()){
+        searchResults.add(element);
       }
-      emit(GetPlantsSuccessState());
-    }).catchError((error){
-      debugPrint(error.toString());
-      emit(GetPlantsErrorState());
-    });
+    }
+    emit(SearchProductsState());
   }
 
-  ToolsModel? toolsModel;
-  bool toolsLoaded = false;
-  void getTools(){
-    toolsLoaded = false;
-    toolsModel = null;
-    emit(GetToolsLoadingState());
-    DioHelper.getData(
-      path: '/api/v1/tools',
-      options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken'
-          }
-      ),
-    ).then((value){
-      toolsModel = ToolsModel.fromJson(value.data);
-      debugPrint(plantsModel!.message);
-      if(toolsModel!.data!.isNotEmpty){
-        toolsLoaded = true;
-      }
-      emit(GetToolsSuccessState());
-    }).catchError((error){
-      debugPrint(error.toString());
-      emit(GetToolsErrorState());
-    });
-  }
-
-  SeedsModel? seedsModel;
-  bool seedsLoaded = false;
-  void getSeeds(){
-    seedsLoaded = false;
-    seedsModel = null;
-    emit(GetSeedsLoadingState());
-    DioHelper.getData(
-      path: '/api/v1/seeds',
-      options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken'
-          }
-      ),
-    ).then((value){
-      seedsModel = SeedsModel.fromJson(value.data);
-      debugPrint(plantsModel!.message);
-      if(seedsModel!.data!.isNotEmpty){
-        seedsLoaded = true;
-      }
-      emit(GetSeedsSuccessState());
-    }).catchError((error){
-      debugPrint(error.toString());
-      emit(GetSeedsErrorState());
-    });
-  }
+  // PlantsModel? plantsModel;
+  // bool plantsLoaded = false;
+  // void getPlants(){
+  //   plantsLoaded = false;
+  //   plantsModel = null;
+  //   emit(GetPlantsLoadingState());
+  //   DioHelper.getData(
+  //     path: '/api/v1/plants',
+  //     options: Options(
+  //       headers: {
+  //         'Authorization': 'Bearer $accessToken'
+  //       }
+  //     ),
+  //   ).then((value){
+  //     plantsModel = PlantsModel.fromJson(value.data);
+  //     debugPrint(plantsModel!.message);
+  //     if(plantsModel!.data!.isNotEmpty){
+  //       plantsLoaded = true;
+  //     }
+  //     emit(GetPlantsSuccessState());
+  //   }).catchError((error){
+  //     debugPrint(error.toString());
+  //     emit(GetPlantsErrorState());
+  //   });
+  // }
+  //
+  // ToolsModel? toolsModel;
+  // bool toolsLoaded = false;
+  // void getTools(){
+  //   toolsLoaded = false;
+  //   toolsModel = null;
+  //   emit(GetToolsLoadingState());
+  //   DioHelper.getData(
+  //     path: '/api/v1/tools',
+  //     options: Options(
+  //         headers: {
+  //           'Authorization': 'Bearer $accessToken'
+  //         }
+  //     ),
+  //   ).then((value){
+  //     toolsModel = ToolsModel.fromJson(value.data);
+  //     debugPrint(plantsModel!.message);
+  //     if(toolsModel!.data!.isNotEmpty){
+  //       toolsLoaded = true;
+  //     }
+  //     emit(GetToolsSuccessState());
+  //   }).catchError((error){
+  //     debugPrint(error.toString());
+  //     emit(GetToolsErrorState());
+  //   });
+  // }
+  //
+  // SeedsModel? seedsModel;
+  // bool seedsLoaded = false;
+  // void getSeeds(){
+  //   seedsLoaded = false;
+  //   seedsModel = null;
+  //   emit(GetSeedsLoadingState());
+  //   DioHelper.getData(
+  //     path: '/api/v1/seeds',
+  //     options: Options(
+  //         headers: {
+  //           'Authorization': 'Bearer $accessToken'
+  //         }
+  //     ),
+  //   ).then((value){
+  //     seedsModel = SeedsModel.fromJson(value.data);
+  //     debugPrint(plantsModel!.message);
+  //     if(seedsModel!.data!.isNotEmpty){
+  //       seedsLoaded = true;
+  //     }
+  //     emit(GetSeedsSuccessState());
+  //   }).catchError((error){
+  //     debugPrint(error.toString());
+  //     emit(GetSeedsErrorState());
+  //   });
+  // }
 
   UserModel? userModel;
   bool isUserLoaded = false;

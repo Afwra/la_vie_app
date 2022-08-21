@@ -7,6 +7,7 @@ import 'package:la_vie_app/shared/components/components.dart';
 import 'package:la_vie_app/shared/cubit/app_cubit/cubit.dart';
 import 'package:la_vie_app/shared/cubit/app_cubit/states.dart';
 
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -30,6 +31,7 @@ class HomeScreen extends StatelessWidget {
                       child: defaultSearchField(
                         isReadOnly: true,
                         onTap: (){
+                          cubit.isSearchSubmitted = false;
                           navigateTo(context, SearchScreen());
                         }
                       ),
@@ -74,7 +76,7 @@ class HomeScreen extends StatelessWidget {
 
                         onPressed:(){
                           cubit.changeFilters(0);
-                          cubit.getProducts();
+                          cubit.getProducts(context: context);
                         } ,child: const Text('All'),),
                       //Center(child: Text('Plants',style: TextStyle(color:Colors.black),),),
                     ),
@@ -90,7 +92,7 @@ class HomeScreen extends StatelessWidget {
                       child: MaterialButton(
                         onPressed:(){
                           cubit.changeFilters(1);
-                          cubit.getPlants();
+                          // cubit.getPlants();
                         } ,child: const Text('Plants'),),
                       //Center(child: Text('Plants',style: TextStyle(color:Colors.black),),),
                     ),
@@ -106,7 +108,7 @@ class HomeScreen extends StatelessWidget {
                       child: MaterialButton(
                         onPressed:(){
                           cubit.changeFilters(2);
-                          cubit.getSeeds();
+                          // cubit.getSeeds();
                         } ,child: const Text('Seeds'),),
                       //Center(child: Text('Plants',style: TextStyle(color:Colors.black),),),
                     ),
@@ -123,7 +125,7 @@ class HomeScreen extends StatelessWidget {
 
                         onPressed:(){
                           cubit.changeFilters(3);
-                          cubit.getTools();
+                          // cubit.getTools();
                         } ,child: const Text('Tools'),),
                       //Center(child: Text('Plants',style: TextStyle(color:Colors.black),),),
                     ),
@@ -157,7 +159,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               if(cubit.isPlantsPressed)
                 ConditionalBuilder(
-                condition: cubit.plantsLoaded,
+                condition: cubit.productsLoaded,
                 builder: (context) => GridView.builder(
                   clipBehavior: Clip.none,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -169,8 +171,8 @@ class HomeScreen extends StatelessWidget {
 
                   ),
                   padding: const EdgeInsets.all(8),
-                  itemCount: cubit.plantsModel!.data!.length,
-                  itemBuilder: (context,index)=>buildProductItem(cubit.plantsModel!.data![index]),
+                  itemCount: cubit.plants.length,
+                  itemBuilder: (context,index)=>buildProductItem(cubit.plants[index]),
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -179,7 +181,7 @@ class HomeScreen extends StatelessWidget {
               ),
               if(cubit.isToolsPressed)
                 ConditionalBuilder(
-                  condition: cubit.toolsLoaded,
+                  condition: cubit.productsLoaded,
                   builder: (context) => GridView.builder(
                     clipBehavior: Clip.none,
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -191,8 +193,8 @@ class HomeScreen extends StatelessWidget {
 
                     ),
                     padding: const EdgeInsets.all(8),
-                    itemCount: cubit.toolsModel!.data!.length,
-                    itemBuilder: (context,index)=>buildProductItem(cubit.toolsModel!.data![index]),
+                    itemCount: cubit.tools.length,
+                    itemBuilder: (context,index)=>buildProductItem(cubit.tools[index]),
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -201,7 +203,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               if(cubit.isSeedsPressed)
                 ConditionalBuilder(
-                  condition: cubit.seedsLoaded,
+                  condition: cubit.productsLoaded,
                   builder: (context) => GridView.builder(
                     clipBehavior: Clip.none,
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -212,9 +214,9 @@ class HomeScreen extends StatelessWidget {
                       crossAxisSpacing: 10,
 
                     ),
-                    padding: EdgeInsets.all(8),
-                    itemCount: cubit.seedsModel!.data!.length,
-                    itemBuilder: (context,index)=>buildProductItem(cubit.seedsModel!.data![index]),
+                    padding: const EdgeInsets.all(8),
+                    itemCount: cubit.seeds.length,
+                    itemBuilder: (context,index)=>buildProductItem(cubit.seeds[index]),
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -229,91 +231,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget buildProductItem(data)=>SizedBox(
-    height: 200,
-    child: Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          height: 272,
-          width: 200,
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: const [
-                BoxShadow(blurRadius: 0.5, color: Colors.grey)
-              ]),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                        onPressed: () {}, icon: const Icon(Ionicons.remove)),
-                    const Text('1'),
-                    IconButton(onPressed: () {}, icon: const Icon(Ionicons.add))
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(14.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${data.name}',
-                      style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text('20'),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      height: 40,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: MaterialButton(
-                        child: const Text(
-                          'Add to Cart',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                          ),
-                        ),
-                        onPressed: () {},
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-        Align(
-          alignment: const Alignment(-1.2, -1.2),
-          child: Image(
-            image: data.imageUrl==''? const NetworkImage('https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1665px-No-Image-Placeholder.svg.png'):NetworkImage('https://lavie.orangedigitalcenteregypt.com${data.imageUrl}'),
-            width: 90,
-            height: 120,
-            fit: BoxFit.fill,
 
-          ),
-        ),
-      ],
-    ),
-  );
   // Widget buildFilters(FilterModel model) => Row(
   //       children: [
   //         Container(

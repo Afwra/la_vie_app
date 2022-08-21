@@ -324,12 +324,12 @@ class FormsScreen extends StatelessWidget {
           IconButton(onPressed: (){}, icon: Icon(Ionicons.thumbs_up_outline,color: Colors.black.withOpacity(0.6),)),
           const SizedBox(width: 1,),
           Text(
-            '${data.forumLikes!.isEmpty?'0':data.forumLikes}  Likes',
+            '${data.forumLikes!.isEmpty?'0':data.forumLikes!.length}  Likes',
             style: TextStyle(color: Colors.black.withOpacity(0.6)),
           ),
           const SizedBox(width: 50,),
           Text(
-            '${data.forumComments!.isEmpty?'0':data.forumLikes}   Replies',
+            '${data.forumComments!.isEmpty?'0':data.forumComments!.length}   Replies',
             style: TextStyle(color: Colors.black.withOpacity(0.6)),
           ),
 
