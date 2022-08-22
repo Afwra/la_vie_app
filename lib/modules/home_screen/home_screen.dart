@@ -53,6 +53,7 @@ class HomeScreen extends StatelessWidget {
                           color: Colors.white,
                         ),
                         onPressed: () {
+                          cubit.getFromCart();
                           navigateTo(context, CartScreen());
                         },
                       ),
@@ -153,7 +154,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     padding: const EdgeInsets.all(8),
                     itemCount: cubit.productsModel!.data!.length,
-                    itemBuilder: (context,index)=>buildProductItem(cubit.productsModel!.data![index]),
+                    itemBuilder: (context,index)=>buildProductItem(cubit.productsModel!.data![index],context),
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -175,7 +176,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                   padding: const EdgeInsets.all(8),
                   itemCount: cubit.plants.length,
-                  itemBuilder: (context,index)=>buildProductItem(cubit.plants[index]),
+                  itemBuilder: (context,index)=>buildProductItem(cubit.plants[index],context),
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -197,7 +198,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     padding: const EdgeInsets.all(8),
                     itemCount: cubit.tools.length,
-                    itemBuilder: (context,index)=>buildProductItem(cubit.tools[index]),
+                    itemBuilder: (context,index)=>buildProductItem(cubit.tools[index],context),
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -219,7 +220,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     padding: const EdgeInsets.all(8),
                     itemCount: cubit.seeds.length,
-                    itemBuilder: (context,index)=>buildProductItem(cubit.seeds[index]),
+                    itemBuilder: (context,index)=>buildProductItem(cubit.seeds[index],context),
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),

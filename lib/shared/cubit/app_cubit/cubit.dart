@@ -19,6 +19,7 @@ import 'package:la_vie_app/shared/cubit/app_cubit/states.dart';
 import 'package:la_vie_app/shared/network/remote/dio_helper.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../../../models/cart_model.dart';
 import '../../../models/filter_model.dart';
 import '../../../models/product_search_history_model.dart';
 import '../../../models/user_model.dart';
@@ -388,6 +389,32 @@ class AppCubit extends Cubit<AppStates>{
       emit(PostForumErrorState());
     });
   }
+  
+  
+  void incrementCounter({required p.Data data}){
+    data.count++;
+    emit(ProductsIncrementState());
+  }
+  void decrementCounter({required p.Data data}){
+    if(data.count>1) {
+      data.count--;
+    }
+    emit(ProductsDecrementState());
+  }
+
+  void incrementCartCounter({required CartModel data}){
+    data.count = (data.count)! +1;
+    totalCartPrice+= (data.price)!;
+    emit(ProductsIncrementState());
+  }
+  void decrementCartCounter({required CartModel data}){
+    if((data.count)!>1) {
+      data.count = (data.count)! - 1 ;
+    }
+    totalCartPrice -= (data.price)!;
+    emit(ProductsDecrementState());
+  }
+
 
   //-------------------------------------------------------------------------------//
   late Database db;
@@ -403,6 +430,13 @@ class AppCubit extends Cubit<AppStates>{
           debugPrint('table created');
         }).catchError((error){
           debugPrint('Error when creating table $error');
+        });
+        database.execute(
+            'CREATE TABLE cart (id INTEGER PRIMARY KEY,productId TEXT,name TEXT,count INTEGER,price REAL,image TEXT)'
+        ).then((value){
+          debugPrint('cart table created');
+        }).catchError((error){
+          debugPrint('Error when creating cart table $error');
         });
       },
       onOpen:(database){
@@ -471,6 +505,62 @@ class AppCubit extends Cubit<AppStates>{
     ).then((value){
       getSearchHistory();
       emit(DeleteDatabaseState());
+    }).catchError((error){
+      debugPrint('Error when Deleteing $error');
+    });
+  }
+
+
+  void insertIntoCart({required p.Data data}){
+    db.insert(
+        'cart',
+        {
+          'productId':data.productId,
+          'name':data.name,
+          'count':data.count,
+          'price':data.price,
+          'image':data.imageUrl
+        }
+    ).then((value){
+      debugPrint('$value inserted successfully');
+      showToast(msg: 'Added Successfully to cart',textColor: Colors.white,backGroundColor: Colors.green,toastLength: Toast.LENGTH_SHORT);
+      getFromCart();
+      emit(InsertCartDatabaseState());
+    }).catchError((error){
+      debugPrint('could not insert $error');
+    });
+  }
+  List<CartModel> cart = [];
+  num totalCartPrice = 0;
+  void getFromCart(){
+    cart = [];
+    totalCartPrice = 0;
+    db.query(
+        'cart',
+        orderBy: 'price'
+    ).then((value){
+      for (var element in value) {
+        CartModel model = CartModel.fromDB(element);
+        totalCartPrice += (model.price)! * num.parse(model.count.toString());
+        cart.add(model);
+      }
+      emit(GetCartDatabaseState());
+    }).catchError((error){
+      debugPrint('error when getting database $error');
+    });
+  }
+  void deleteFromCart({required CartModel model}){
+    db.delete(
+        'cart',
+        where: 'id = ${model.id}'
+    ).then((value){
+      if(totalCartPrice > 0){
+        totalCartPrice -= (model.price)!;
+      }
+      showToast(msg: 'Deleted Successfully',textColor: Colors.white,backGroundColor: Colors.green,toastLength: Toast.LENGTH_SHORT);
+
+      getFromCart();
+      emit(DeleteCartDatabaseState());
     }).catchError((error){
       debugPrint('Error when Deleteing $error');
     });

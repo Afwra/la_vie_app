@@ -96,7 +96,7 @@ class SearchScreen extends StatelessWidget {
                           ),
                           padding: const EdgeInsets.all(8),
                           itemCount: cubit.searchResults.length,
-                          itemBuilder: (context,index)=>buildProductItem(cubit.searchResults[index]),
+                          itemBuilder: (context,index)=>buildProductItem(cubit.searchResults[index],context),
                           scrollDirection: Axis.vertical,
                         ),
                       ),

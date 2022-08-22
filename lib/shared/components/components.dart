@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:la_vie_app/shared/cubit/app_cubit/cubit.dart';
 
 import '../../models/products_model.dart';
 
@@ -87,97 +88,106 @@ Widget defaultButton({String? text,void Function()? onPressed,double? width,Colo
 
 void showToast({required String msg,Color? backGroundColor,ToastGravity? gravity,Toast? toastLength,Color? textColor})=>Fluttertoast.showToast(
     msg: msg,
-  backgroundColor: backGroundColor,
-  gravity: gravity,
+  backgroundColor: backGroundColor??Colors.white,
+  gravity: gravity??ToastGravity.CENTER,
   toastLength: toastLength,
-  textColor: textColor
+  textColor: textColor??Colors.black
 );
-
-Widget buildProductItem(Data data)=>SizedBox(
-  height: 200,
-  child: Stack(
-    clipBehavior: Clip.none,
-    children: [
-      Container(
-        height: 272,
-        width: 200,
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: const [
-              BoxShadow(blurRadius: 0.5, color: Colors.grey)
-            ]),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                      onPressed: () {}, icon: const Icon(Ionicons.remove)),
-                  const Text('1'),
-                  IconButton(onPressed: () {}, icon: const Icon(Ionicons.add))
-                ],
+Widget buildProductItem(Data data,BuildContext context) {
+  return SizedBox(
+    height: 200,
+    child: Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          height: 272,
+          width: 200,
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: const [
+                BoxShadow(blurRadius: 0.5, color: Colors.grey)
+              ]),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                        onPressed: () {AppCubit.get(context).decrementCounter(data: data);}, icon: const Icon(Ionicons.remove)),
+                    Text('${data.count}'),
+                    IconButton(onPressed: () {AppCubit.get(context).incrementCounter(data: data);}, icon: const Icon(Ionicons.add))
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(14.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${data.name}',
-                    style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Text(data.price == null?'Unknown':'${data.price} egp'),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    height: 40,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(10),
+              Padding(
+                padding: const EdgeInsets.all(14.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${data.name}',
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
-                    child: MaterialButton(
-                      child: const Text(
-                        'Add to Cart',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                        ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Text(data.price == null ? 'Unknown' : '${data.price} egp'),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      height: 40,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      onPressed: () {},
+                      child: MaterialButton(
+                        child: const Text(
+                          'Add to Cart',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                        onPressed: () {
+                          AppCubit.get(context).insertIntoCart(data: data);
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            )
-          ],
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
-      ),
-      Align(
-        alignment: const Alignment(-1.2, -1.2),
-        child: Image(
-          image: data.imageUrl==''? const NetworkImage('https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1665px-No-Image-Placeholder.svg.png'):NetworkImage('https://lavie.orangedigitalcenteregypt.com${data.imageUrl}'),
-          width: 90,
-          height: 120,
-          fit: BoxFit.fill,
 
+        Align(
+          alignment: const Alignment(-1.0, -1.2),
+          child: Image(
+            image: data.imageUrl == ''
+                ? const NetworkImage(
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1665px-No-Image-Placeholder.svg.png')
+                : NetworkImage(
+                'https://lavie.orangedigitalcenteregypt.com${data.imageUrl}'),
+            width: 90,
+            height: 120,
+            fit: BoxFit.fill,
+
+          ),
         ),
-      ),
-    ],
-  ),
-);
+      ],
+    ),
+  );
+}
 
 Widget defaultEmptyScreen({required String title})=> Expanded(
   child: Column(

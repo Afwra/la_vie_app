@@ -11,7 +11,8 @@ class GetProductsLoadingState extends AppStates{}
 class GetProductsSuccessState extends AppStates{}
 class GetProductsErrorState extends AppStates{}
 
-
+class ProductsIncrementState extends AppStates{}
+class ProductsDecrementState extends AppStates{}
 
 class SearchProductsState extends AppStates{}
 
@@ -50,3 +51,10 @@ class InsertDatabaseState extends AppStates{}
 class UpdateDatabaseState extends AppStates{}
 class DeleteDatabaseState extends AppStates{}
 class GetDatabaseState extends AppStates{}
+
+
+class CreateCartDatabaseState extends AppStates{}
+class InsertCartDatabaseState extends AppStates{}
+class UpdateCartDatabaseState extends AppStates{}
+class DeleteCartDatabaseState extends AppStates{}
+class GetCartDatabaseState extends AppStates{}
