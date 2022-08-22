@@ -17,8 +17,10 @@ import 'package:la_vie_app/shared/components/components.dart';
 import 'package:la_vie_app/shared/constants.dart';
 import 'package:la_vie_app/shared/cubit/app_cubit/states.dart';
 import 'package:la_vie_app/shared/network/remote/dio_helper.dart';
+import 'package:sqflite/sqflite.dart';
 
 import '../../../models/filter_model.dart';
+import '../../../models/product_search_history_model.dart';
 import '../../../models/user_model.dart';
 import '../../../modules/forums_screen/forums_screen.dart';
 
@@ -143,8 +145,10 @@ class AppCubit extends Cubit<AppStates>{
 
   List<p.Data> searchResults =[];
   bool isSearchSubmitted = false;
+  String? searchText;
   void searchProduct({required String searchName}){
     searchResults = [];
+    searchText = searchName;
     for (var element in productsModel!.data!) {
       if(element.name.toString().toLowerCase() == searchName.toString().toLowerCase()){
         searchResults.add(element);
@@ -382,6 +386,93 @@ class AppCubit extends Cubit<AppStates>{
     }).catchError((error){
       debugPrint(error.toString());
       emit(PostForumErrorState());
+    });
+  }
+
+  //-------------------------------------------------------------------------------//
+  late Database db;
+  void createDatabase()async{
+    await openDatabase(
+        'laVie.db',
+      version: 1,
+      onCreate: (database,version){
+        debugPrint('database created');
+        database.execute(
+          'CREATE TABLE productSearchHistory (id INTEGER PRIMARY KEY,text TEXT)'
+        ).then((value){
+          debugPrint('table created');
+        }).catchError((error){
+          debugPrint('Error when creating table $error');
+        });
+      },
+      onOpen:(database){
+        debugPrint('database is opened');
+        db = database;
+        getSearchHistory();
+      },
+    ).then((value){
+      db = value;
+      emit(CreateDatabaseState());
+    });
+  }
+
+  // bool checkIfSearchExists({required String text}){
+  //   bool exist=false;
+  //   db.query(
+  //     'productSearchHistory',
+  //     where: 'text = $text'
+  //   ).then((value){
+  //     debugPrint(value.toString());
+  //     if(value.isEmpty){
+  //       exist = false;
+  //     }else{
+  //       exist = true;
+  //     }
+  //   });
+  //   return exist;
+  // }
+
+  void insertSearchHistory({required String text}){
+      db.insert(
+          'productSearchHistory',
+          {
+            'text':text
+          }
+      ).then((value){
+        debugPrint('$value inserted successfully');
+        getSearchHistory();
+        emit(InsertDatabaseState());
+      }).catchError((error){
+        debugPrint('could not insert $error');
+      });
+
+
+  }
+  List<ProductSearchHistoryModel> searchHistory =[];
+  void getSearchHistory(){
+    searchHistory = [];
+    db.query(
+      'productSearchHistory',
+      orderBy: 'id'
+    ).then((value){
+      for (var element in value) {
+        searchHistory.add(ProductSearchHistoryModel.fromDB(element));
+      }
+      emit(GetDatabaseState());
+    }).catchError((error){
+      debugPrint('error when getting database $error');
+    });
+  }
+
+  void deleteSearchHistory({required int id}){
+    db.delete(
+      'productSearchHistory',
+      where: 'id = $id'
+    ).then((value){
+      getSearchHistory();
+      emit(DeleteDatabaseState());
+    }).catchError((error){
+      debugPrint('Error when Deleteing $error');
     });
   }
 }

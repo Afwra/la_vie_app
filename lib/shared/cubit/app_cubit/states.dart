@@ -44,3 +44,9 @@ class GetImageErrorState extends AppStates{}
 
 class PostForumSuccessState extends AppStates{}
 class PostForumErrorState extends AppStates{}
+
+class CreateDatabaseState extends AppStates{}
+class InsertDatabaseState extends AppStates{}
+class UpdateDatabaseState extends AppStates{}
+class DeleteDatabaseState extends AppStates{}
+class GetDatabaseState extends AppStates{}
