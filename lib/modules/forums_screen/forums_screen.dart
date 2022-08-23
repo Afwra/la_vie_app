@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:la_vie_app/models/forums_model.dart';
+import 'package:la_vie_app/modules/blogs_screen/blogs_screen.dart';
 import 'package:la_vie_app/modules/forums_screen/new_post_screen.dart';
 import 'package:la_vie_app/shared/components/components.dart';
 import 'package:la_vie_app/shared/cubit/app_cubit/cubit.dart';
@@ -86,6 +87,20 @@ class FormsScreen extends StatelessWidget {
                       backgroundColor: cubit.isAllForumsPressed?Colors.white:Colors.green,
                       border: cubit.isAllForumsPressed? Border.all(color: Colors.black.withOpacity(0.33)):null ,
                       textColor: cubit.isAllForumsPressed?HexColor('#979797'): null,
+
+                    ),
+                    const SizedBox(width: 10,),
+                    defaultButton(
+                      text: 'Blogs',
+                      width: 111,
+                      fontSize: 12,
+                      onPressed: (){
+                        cubit.getBlogs();
+                        navigateTo(context, BlogsScreen());
+                      },
+                      backgroundColor: Colors.white,
+                      border: Border.all(color: Colors.black.withOpacity(0.33)) ,
+                      textColor: HexColor('#979797'),
 
                     ),
                   ],

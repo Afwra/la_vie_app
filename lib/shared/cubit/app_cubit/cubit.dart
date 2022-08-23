@@ -19,6 +19,7 @@ import 'package:la_vie_app/shared/cubit/app_cubit/states.dart';
 import 'package:la_vie_app/shared/network/remote/dio_helper.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../../../models/blogs_model.dart' as blog;
 import '../../../models/cart_model.dart';
 import '../../../models/filter_model.dart';
 import '../../../models/product_search_history_model.dart';
@@ -413,6 +414,87 @@ class AppCubit extends Cubit<AppStates>{
     }
     totalCartPrice -= (data.price)!;
     emit(ProductsDecrementState());
+  }
+
+  bool isBlogsLoaded = false;
+  blog.BlogsModel? blogsModel;
+  List<blog.Plants> plantsBlog =[];
+  List<blog.Seeds> seedsBlog =[];
+  List<blog.Tools> toolsBlog =[];
+  List<dynamic> allBlogs =[];
+  void getBlogs(){
+    isBlogsLoaded = false;
+    emit(GetBlogsLoadingState());
+    DioHelper.getData(
+      path: '/api/v1/products/blogs',
+      options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken'
+          }
+      ),
+    ).then((value){
+      blogsModel = blog.BlogsModel.fromJson(value.data);
+      debugPrint(blogsModel!.message);
+      if(blogsModel?.data != null){
+        for (var element in blogsModel!.data!.plants!) {
+          plantsBlog.add(element);
+        }
+        for (var element in blogsModel!.data!.seeds!) {
+          seedsBlog.add(element);
+        }
+        for (var element in blogsModel!.data!.tools!) {
+          toolsBlog.add(element);
+        }
+        allBlogs.addAll(plantsBlog);
+        allBlogs.addAll(seedsBlog);
+        allBlogs.addAll(toolsBlog);
+        allBlogs.shuffle();
+        debugPrint('length of all blocks = ${allBlogs.length}');
+        isBlogsLoaded = true;
+      }
+      emit(GetBlogsSuccessState());
+    }).catchError((error){
+      debugPrint(error.toString());
+      emit(GetBlogsErrorState());
+    });
+  }
+
+  bool isBlogByIdLoaded = false;
+  void getBlogById({required String id,bool plant = false,bool seed = false,bool tool = false}){
+    isBlogsLoaded = false;
+    emit(GetBlogsLoadingState());
+    DioHelper.getData(
+      path: '/api/v1/products/blogs',
+      options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken'
+          }
+      ),
+    ).then((value){
+      blogsModel = blog.BlogsModel.fromJson(value.data);
+      debugPrint(blogsModel!.message);
+      if(blogsModel?.data != null){
+        for (var element in blogsModel!.data!.plants!) {
+          plantsBlog.add(element);
+        }
+        for (var element in blogsModel!.data!.seeds!) {
+          seedsBlog.add(element);
+        }
+        for (var element in blogsModel!.data!.tools!) {
+          toolsBlog.add(element);
+        }
+        allBlogs.addAll(plantsBlog);
+        allBlogs.addAll(seedsBlog);
+        allBlogs.addAll(toolsBlog);
+        allBlogs.shuffle();
+        debugPrint('length of all blocks = ${allBlogs.length}');
+        isBlogsLoaded = true;
+      }
+      emit(GetBlogsSuccessState());
+    }).catchError((error){
+      debugPrint(error.toString());
+      emit(GetBlogsErrorState());
+    });
   }
 
 

@@ -40,6 +40,10 @@ class GetForumsLoadingState extends AppStates{}
 class GetForumsSuccessState extends AppStates{}
 class GetForumsErrorState extends AppStates{}
 
+class GetBlogsLoadingState extends AppStates{}
+class GetBlogsSuccessState extends AppStates{}
+class GetBlogsErrorState extends AppStates{}
+
 class GetImageSuccessState extends AppStates{}
 class GetImageErrorState extends AppStates{}
 
