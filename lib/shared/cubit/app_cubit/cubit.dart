@@ -497,6 +497,31 @@ class AppCubit extends Cubit<AppStates>{
     });
   }
 
+  ForumsModel? singleForm;
+  bool singleFormLoaded = false;
+  void getForumById({required String id}){
+    singleFormLoaded = false;
+    singleForm = null;
+    emit(GetForumsLoadingState());
+    DioHelper.getData(
+        path: '/api/v1/forums/{$id}',
+        options: Options(
+            headers: {
+              'Authorization': 'Bearer $accessToken'
+            }
+        ),
+    ).then((value){
+      if(value.data['type']=='Success'){
+        singleFormLoaded = true;
+        singleForm = ForumsModel.fromJson(value.data);
+        debugPrint(singleForm!.message);
+        emit(GetForumsSuccessState());
+      }
+    }).catchError((error){
+      debugPrint(error.toString());
+      emit(GetForumsErrorState());
+    });
+  }
 
   //-------------------------------------------------------------------------------//
   late Database db;
