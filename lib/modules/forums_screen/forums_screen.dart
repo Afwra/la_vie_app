@@ -52,14 +52,16 @@ class FormsScreen extends StatelessWidget {
             child: Column(
               children: [
                 defaultSearchField(
+                  maxLines: 1,
                   controller: searchController,
-                  onChanged: (value){
+                  onSubmit: (value){
                     cubit.getForums(
-                      query: {
-                        'search':value
-                      }
+                        query: {
+                          'search':value
+                        }
                     );
-                  }
+                  },
+
                 ),
                 const SizedBox(height: 15,),
                 Row(
@@ -240,7 +242,8 @@ class FormsScreen extends StatelessWidget {
   }
   Widget forumBuilder(Data data,BuildContext context)=>InkWell(
     onTap: (){
-      navigateTo(context, SingleForumScreen(data));
+      AppCubit.get(context).getForumById(id: (data.forumId)!);
+      navigateTo(context, SingleForumScreen());
     },
     child: Column(
       children: [
@@ -261,7 +264,8 @@ class FormsScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     CircleAvatar(
-                      backgroundImage: NetworkImage('https://media.istockphoto.com/vectors/default-image-icon-vector-missing-picture-page-for-website-design-or-vector-id1357365823?k=20&m=1357365823&s=612x612&w=0&h=ZH0MQpeUoSHM3G2AWzc8KkGYRg4uP_kuu0Za8GFxdFc='),
+                      backgroundImage:
+                      NetworkImage(data.user!.imageUrl==''?'https://media.istockphoto.com/vectors/default-image-icon-vector-missing-picture-page-for-website-design-or-vector-id1357365823?k=20&m=1357365823&s=612x612&w=0&h=ZH0MQpeUoSHM3G2AWzc8KkGYRg4uP_kuu0Za8GFxdFc=':'${data.user!.imageUrl}'),
                       backgroundColor: Colors.white,
                       radius: 30,
                     ),
@@ -271,7 +275,7 @@ class FormsScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Mayar Mohamed',
+                            '${data.user!.firstName} ${data.user!.lastName}',
                             style:const TextStyle(
                               color: Colors.black,
                               fontSize: 16,

@@ -1,81 +1,100 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:la_vie_app/models/forums_model.dart';
 import 'package:la_vie_app/shared/components/components.dart';
 import 'package:la_vie_app/shared/cubit/app_cubit/cubit.dart';
 import 'package:la_vie_app/shared/cubit/app_cubit/states.dart';
 
+import '../../models/forum_by_id_model.dart';
+
 class SingleForumScreen extends StatelessWidget {
   var searchController = TextEditingController();
-  Data? forumData;
 
-  SingleForumScreen(this.forumData, {Key? key}) : super(key: key);
+  SingleForumScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AppCubit,AppStates>(
       listener: (context,state){},
       builder: (context,state){
-        // AppCubit cubit = AppCubit.get(context);
+        AppCubit cubit = AppCubit.get(context);
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
             backgroundColor: Colors.white,
             leading: IconButton(
               onPressed: (){
+                cubit.singleForm!.data!.clear();
+
                 Navigator.pop(context);
               },
               icon: const Icon(Ionicons.arrow_back_outline,color: Colors.black,),
             ),
             elevation: 0,
           ),
-          body:Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: SingleChildScrollView(
+          body:ConditionalBuilder(
+            condition: cubit.singleFormLoaded,
+            builder: (context)=>Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: SingleChildScrollView(
 
-              child: Column(
-                children: [
-                  buildForumItem(),
-                  const SizedBox(height: 10,),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: defaultSearchField(
-                          text: 'Add a comment',
-                          maxLines: 5,
-                          minLines: 1,
-                          prefixEnabled: false,
+                child: Column(
+                  children: [
+                    buildForumItem((cubit.singleForm!.data![cubit.singleForm!.data!.length-1])),
+                    const SizedBox(height: 10,),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: defaultSearchField(
+                            controller: searchController,
+                            text: 'Add a comment',
+                            maxLines: 5,
+                            minLines: 1,
+                            prefixEnabled: false,
+                          ),
                         ),
-                      ),
-                      IconButton(onPressed: (){}, icon: const Icon(Ionicons.send_outline))
-                    ],
-                  ),
-                  const SizedBox(height: 10,),
-                  ConditionalBuilder(
-                    condition: forumData!.forumComments!.isNotEmpty,
-                    builder:(context)=> ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context,index)=> buildCommentItem((forumData!.forumComments![index])),
-                      separatorBuilder: (context,index)=>const SizedBox(height: 10,),
-                      itemCount: forumData!.forumComments!.length,
+                        IconButton(
+                            onPressed: (){
+                              if(searchController.text.isNotEmpty){
+                                cubit.commentForum(forumId: (cubit.singleForm!.data![cubit.singleForm!.data!.length-1].forumId)!, comment: searchController.text);
+                                searchController.text = '';
+                              }else{
+                                showToast(msg: 'Enter Comment',toastLength: Toast.LENGTH_SHORT,backGroundColor: Colors.red,textColor: Colors.white,gravity: ToastGravity.BOTTOM);
+                                searchController.text='';
+                              }
+                            },
+                            icon: const Icon(Ionicons.send_outline)
+                        )
+                      ],
                     ),
-                    fallback: (context)=>const SizedBox(),
-                  ),
+                    const SizedBox(height: 10,),
+                    ConditionalBuilder(
+                      condition: cubit.singleForm!.data![cubit.singleForm!.data!.length-1].forumComments!.isNotEmpty,
+                      builder:(context)=> ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context,index)=> buildCommentItem((cubit.singleForm?.data![cubit.singleForm!.data!.length-1].forumComments![index])!),
+                        separatorBuilder: (context,index)=>const SizedBox(height: 10,),
+                        itemCount: cubit.singleForm!.data![cubit.singleForm!.data!.length-1].forumComments!.length,
+                      ),
+                      fallback: (context)=>const SizedBox(),
+                    ),
 
-                ],
+                  ],
+                ),
               ),
             ),
+            fallback: (context)=>const Center(child: CircularProgressIndicator()),
           ),
 
         );
       } ,
     );
   }
-  Widget buildForumItem()=>Column(
+  Widget buildForumItem(Data data)=>Column(
     children: [
       Card(
 
@@ -132,7 +151,7 @@ class SingleForumScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 8),
               child: Text(
-                '${forumData!.title}',
+                '${data.title}',
                 style: TextStyle(
                   color: HexColor('#1ABC00'),
                   fontSize: 20,
@@ -146,7 +165,7 @@ class SingleForumScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 13),
               child: Text(
-                '${forumData!.description}',
+                '${data.description}',
                 style: TextStyle(
                   color: HexColor('#8F8D8D'),
                   fontSize: 14,
@@ -160,13 +179,13 @@ class SingleForumScreen extends StatelessWidget {
           ],
         ),
       ),
-      if(forumData!.imageUrl!=null)
+      if(data.imageUrl!=null)
         Container(
         width: double.infinity,
         height: 150,
         decoration: BoxDecoration(
             image: DecorationImage(
-                image: NetworkImage('https://lavie.orangedigitalcenteregypt.com${forumData!.imageUrl}'),
+                image: NetworkImage('https://lavie.orangedigitalcenteregypt.com${data.imageUrl}'),
                 fit: BoxFit.cover
             )
         ),
@@ -177,12 +196,12 @@ class SingleForumScreen extends StatelessWidget {
           IconButton(onPressed: (){}, icon: Icon(Ionicons.thumbs_up_outline,color: Colors.black.withOpacity(0.6),)),
           const SizedBox(width: 1,),
           Text(
-            '${forumData!.forumLikes!.isEmpty?'0':forumData!.forumLikes!.length} Likes',
+            '${data.forumLikes!.isEmpty?'0':data.forumLikes!.length} Likes',
             style: TextStyle(color: Colors.black.withOpacity(0.6)),
           ),
           const SizedBox(width: 50,),
           Text(
-            '${forumData!.forumComments!.isEmpty?'0':forumData!.forumComments!.length}  Replies',
+            '${data.forumComments!.isEmpty?'0':data.forumComments!.length}  Replies',
             style: TextStyle(color: Colors.black.withOpacity(0.6)),
           ),
 
@@ -190,7 +209,7 @@ class SingleForumScreen extends StatelessWidget {
       )
     ],
   );
-  Widget buildCommentItem(ForumComments comment)=> Row(
+  Widget buildCommentItem( comment)=> Row(
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [

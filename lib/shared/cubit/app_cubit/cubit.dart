@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:la_vie_app/models/forums_model.dart';
+import 'package:la_vie_app/models/forum_by_id_model.dart';
+import 'package:la_vie_app/models/forums_model.dart' as f;
 import 'package:la_vie_app/models/products_model.dart' as p;
 import 'package:la_vie_app/modules/home_screen/home_screen.dart';
 import 'package:la_vie_app/modules/login_register_screen/LoginScreen.dart';
@@ -322,7 +323,7 @@ class AppCubit extends Cubit<AppStates>{
   }
 
 
-  ForumsModel? forumsModel;
+  f.ForumsModel? forumsModel;
   bool isForumsLoaded = false;
   bool isAllForumsPressed = true;
   void getForums({Map<String,dynamic>? query}){
@@ -340,7 +341,7 @@ class AppCubit extends Cubit<AppStates>{
     ).then((value){
       if(value.data['type']=='Success'){
         isForumsLoaded = true;
-        forumsModel = ForumsModel.fromJson(value.data);
+        forumsModel = f.ForumsModel.fromJson(value.data);
         debugPrint(forumsModel!.message);
         emit(GetForumsSuccessState());
       }
@@ -388,6 +389,64 @@ class AppCubit extends Cubit<AppStates>{
     }).catchError((error){
       debugPrint(error.toString());
       emit(PostForumErrorState());
+    });
+  }
+
+  void commentForum({required String forumId,required String comment}){
+    DioHelper.postData(
+        path: '/api/v1/forums/:{$forumId}/comment',
+        data: {
+          "comment": comment,
+
+        },
+        options: Options(
+            headers: {
+              'Authorization':'Bearer $accessToken'
+            }
+        ),
+
+
+    ).then((value){
+      showToast(msg: 'Commented Successfully',backGroundColor: Colors.green,textColor: Colors.white);
+      emit(CommentForumsSuccessState());
+    }).catchError((error){
+      debugPrint(error.toString());
+      emit(CommentForumsErrorState());
+    });
+  }
+
+  ForumByIdModel? singleForm;
+  bool singleFormLoaded = false;
+  void getForumById({required String id}){
+    debugPrint('sent id  = $id');
+    emit(GetForumsLoadingState());
+
+    singleFormLoaded = false;
+    singleForm = null;
+    DioHelper.getData(
+      path: '/api/v1/forums/',
+      options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+          }
+      ),
+      query: {
+        'forumId':id.trimLeft().toString()
+      }
+    ).then((value){
+        debugPrint('type of incoming data = ${value.data['data'].runtimeType}');
+        debugPrint('type of incoming data = ${value.toString()}');
+        if(value.data['type']=='Success'){
+
+          singleForm = ForumByIdModel.fromJson(value.data);
+          singleFormLoaded = true;
+
+        }
+        debugPrint(singleForm!.data![0].title);
+        emit(GetForumsSuccessState());
+    }).catchError((error){
+      debugPrint(error.toString());
+      emit(GetForumsErrorState());
     });
   }
   
@@ -497,31 +556,7 @@ class AppCubit extends Cubit<AppStates>{
     });
   }
 
-  ForumsModel? singleForm;
-  bool singleFormLoaded = false;
-  void getForumById({required String id}){
-    singleFormLoaded = false;
-    singleForm = null;
-    emit(GetForumsLoadingState());
-    DioHelper.getData(
-        path: '/api/v1/forums/{$id}',
-        options: Options(
-            headers: {
-              'Authorization': 'Bearer $accessToken'
-            }
-        ),
-    ).then((value){
-      if(value.data['type']=='Success'){
-        singleFormLoaded = true;
-        singleForm = ForumsModel.fromJson(value.data);
-        debugPrint(singleForm!.message);
-        emit(GetForumsSuccessState());
-      }
-    }).catchError((error){
-      debugPrint(error.toString());
-      emit(GetForumsErrorState());
-    });
-  }
+
 
   //-------------------------------------------------------------------------------//
   late Database db;
